@@ -1,10 +1,9 @@
+// Openweathermap API key
 const apiKey = '';
 
 const request = require('request');
 
 const forecast = (latitude, longitude, callback) => {
-    //const url = 'http://api.weatherstack.com/current?access_key=a0994f26ee15baaa90738d4f8d08679e&query= ' + latitude + ', ' +longitude;
-    
     const url = `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
     
     console.log(url);

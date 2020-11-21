@@ -1,3 +1,4 @@
+// Mapbox API key
 const apiKey2 = '';
 const request = require('request');
 
