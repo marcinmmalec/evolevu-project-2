@@ -1,6 +1,6 @@
 body {
     color: #333333;
-    font-family: arial;
+    font-family: arial, Helvetica, sans-serif;
     max-width: 650px;
     margin: 0 auto;
     padding: 0 16px;
@@ -35,6 +35,14 @@ header a {
     color: #888888;
     margin-right: 16px;
     text-decoration: none;
+    background: #eee;
+    padding: 0.6rem;
+    border-radius: 10%;
+}
+
+header a:hover {
+    transition: background 1s;
+    background: #ddd;
 }
 
 .portrait {
@@ -53,3 +61,43 @@ button {
     color: white;
     padding: 8px;
 }
+
+.text-input {
+    padding: 0.7rem;
+    margin: 0 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #888;
+}
+
+.btn {
+    padding: 0.7rem;
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.btn-submit {
+    background: rgb(163, 177, 158);
+    color: white;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    transition: background 1s;
+    background: rgb(118, 128, 115);
+}
+
+.card {
+    position: relative;
+    border-radius: 20px;
+  }
+
+.card-body .card-text {
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .portrait {
+    width: 250px;
+}
+

@@ -1,17 +1,62 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
+
     <head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
         <title>About</title>
-        <link rel="stylesheet" href="/css/styles.css">
         <link rel="icon" href="/img/weather.png">
+        <link rel="stylesheet" href="/css/styles.css">
+
     </head>
-    
+
     <body>
-        <div class="main-content">
-            {{>header}}
-            <img class="portrait">
-        </div>
         
+        <div class="main-content">
+
+            {{!-- render the header.hbs partial --}}
+            {{>header}}
+
+            <p>
+                Project 2 - EvolveU 
+                <br>Weather App
+                <br> <br>
+                Project Team Members:             
+            </p>
+
+            <img src="/img/marcin.jpg" 
+                alt="Marcin M. Malec"
+                class="portrait">
+            
+            <img src="/img/wijoyo.jpg" 
+                alt="Wijoyo Utomo"
+                class="portrait">
+
+            <img src="/img/koeswanto.jpg" 
+                alt="Koeswanto Polim"
+                class="portrait">
+
+            <img src="/img/andrei.jpg" 
+                alt="Andrei Vedeshkin"
+                class="portrait">
+
+            <p>
+            <br>
+            The target audience for the Weather App are users to look up the current weather based on a sensor
+            or the weather API. This app allows a client to look up the weather forecast for a location (city).
+            <br> <br> It was built using Openweather API and Mapbox API.
+            </p>
+        </div>
+
+
+        {{!-- render the footer.hbs partial --}}
         {{>footer}}
+
     </body>
+
 </html>
+

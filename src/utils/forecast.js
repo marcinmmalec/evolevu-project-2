@@ -1,5 +1,5 @@
 // Openweathermap API key
-const apiKey = '';
+const apiKey = '54e7bed8487f1b7de520fa68a9080abe';
 
 const request = require('request');
 

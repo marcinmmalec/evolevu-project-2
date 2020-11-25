@@ -1,5 +1,5 @@
 // Mapbox API key
-const apiKey2 = '';
+const apiKey2 = 'pk.eyJ1Ijoia29lc3dhbnRvIiwiYSI6ImNraHVwc2ZjMTAzaGgycXBneXhla3JreWYifQ.n3tddHKBL4a-ivlFOX1jtA';
 const request = require('request');
 
 const geocode = (address, callback) => {
