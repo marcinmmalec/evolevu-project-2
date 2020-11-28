@@ -12,7 +12,7 @@ console.log('Client side javascript file loaded!');
 });*/
 // url is for localhost
 // url2 is for AWS
-const url = 'http://localhost:3000/weather?address=';
+const url = 'http://localhost:8080/weather?address=';
 const url2 = 'http://weatherapp-env-1.eba-pg3pjbmp.us-west-2.elasticbeanstalk.com/weather?address=';
 
 const weatherForm = document.querySelector('form');
