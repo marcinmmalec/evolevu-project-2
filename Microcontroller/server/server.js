@@ -4,7 +4,19 @@ const port = process.env.PORT || 3000
 
 app.use(express.json())
 
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema;
+
+const sensorDataSchema = new Schema({
+  sensorId: Number,
+  date: Date,
+  time: Date,
+  temperature: Number,
+  pressure: Number
+})
+
+
+
 
 let sensorData = []
 
