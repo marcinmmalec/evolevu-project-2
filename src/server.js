@@ -109,6 +109,13 @@ app.get('/weather', (req, res) => {
                     console.log(error); 
                 });
             });
+            
+            Weather.deleteMany({location: location, utc: {$lt: Math.round(Date.now()/1000)-3600}}).then((a) => {
+                console.log(a);
+            }).catch((error) => {
+                console.log(error); 
+            });
+            
         }).catch((error) => {
             res.status(500).send(error);
         });
