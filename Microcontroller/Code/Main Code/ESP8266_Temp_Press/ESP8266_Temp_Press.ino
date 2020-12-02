@@ -98,8 +98,7 @@ class SensorData {
     StaticJsonDocument<256> convertToJson() {
       StaticJsonDocument<256> doc;
       doc["sensorId"] = formatId(id);
-      doc["date"] = formatNumber(day(tm)) + "-" + formatNumber(month(tm)) + "-" + String(year(tm));
-      doc["time"] = formatNumber(hour(tm)) + ":" + formatNumber(minute(tm)) + ":" + formatNumber(second(tm));
+      doc["time"] = String(year(tm)) + "-" + formatNumber(month(tm)) + "-" + formatNumber(day(tm)) + "T" + formatNumber(hour(tm)) + ":" + formatNumber(minute(tm)) + ":" + formatNumber(second(tm)) +"Z";
       doc["temperature"] = String(temperature, 2);
       doc["pressure"] = String(pressure, 4);
       return doc;
@@ -170,7 +169,8 @@ WiFiUDP Udp;
 unsigned int localPort = 8888;  // local port to listen for UDP packets
 
 static const char ntpServerName[] = "us.pool.ntp.org";
-const int timeZone = -7;  // Pacific Daylight Time (USA)
+const int timeZone = 0;  
+const int MST = -7;      // Pacific Daylight Time (USA)
 
 const int NTP_PACKET_SIZE = 48; // NTP time is in the first 48 bytes of message
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
@@ -180,7 +180,7 @@ byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
 #define PASSWORD1   "5XE4w%ug5!PvHwyb"
 
 #define SSID2       "2 Monkeys and Dragon"
-#define PASSWORD2   ""
+#define PASSWORD2   "Sapim3nd3m"
 
 #define SSID3       "TELUS2340"
 #define PASSWORD3   "f99f664c77"
