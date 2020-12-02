@@ -5,6 +5,7 @@ let port = process.env.PORT || 3000;
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const chalk = require('chalk');
 // Get utilities
 // Geocode: Mapbox API
 const geocode = require('./utils/geocode');
@@ -60,35 +61,43 @@ app.get('/weather', (req, res) => {
             error: 'You must provide an address' 
         });
     }
-    
+    console.log(chalk.white.inverse.bold(`Getting Geocode For ${req.query.address}`));
     geocode(req.query.address, (error, {latitude, longitude, location} = {}) => {
         if (error) {
+            console.log(chalk.red.bold('Failed to Get Geocode'));
             return res.send({error});
         }
-        
+        console.log(chalk.green.bold(`Got Geocode:\nLatitude: ${latitude}\nLongitude: ${longitude}\nLocation: ${location}`));
         //console.log(Math.round(Date.now()/1000));
         // Check database
+        console.log(chalk.white.inverse.bold(`Checking Database For ${location}`));
         Weather.findOne({location: location, utc: {$gte: Math.round(Date.now()/1000)-3600}}).then((a) => {
-            //console.log(a);
             if(a) {
+                console.log(chalk.green.bold('Database Record Found'));
                 const forecastData = {
                     actualTemp: a.temperature,
                     weatherDescription: a.description,
                     weatherIcon: a.icon,
                     utc: a.utc
                 };
-                //console.log(forecastData);
+                console.log(chalk.green.bold(JSON.stringify(forecastData,null,2)));
+                console.log(chalk.white.inverse.bold("Send Results To Sender"));
+                console.log(chalk.white.inverse.bold("END REQUEST"));
                 return res.send({
                     forecast: forecastData,
                     location,
                     address: req.query.address
                 });
             }
+            console.log(chalk.green.bold("No Database Record Found"));
+            console.log(chalk.white.bold.inverse(`Get Forecast for ${location}`));
             forecast(latitude, longitude, (error, forecastData) => {
                 if (error) {
+                    console.log(chalk.red.bold('Failed to Get Forecast'));
                     return res.send({error});
                 } 
-
+                console.log(chalk.green.bold(`Got Forecast for ${location}`));
+                console.log(chalk.white.inverse.bold('Send Results to Sender'));
                 res.send({
                     forecast: forecastData,
                     location,
@@ -102,20 +111,23 @@ app.get('/weather', (req, res) => {
                     icon: forecastData.weatherIcon,
                     utc: forecastData.utc
                 });
-
+                console.log(chalk.white.inverse.bold('Create Database Object'));
+                console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));
+                console.log(chalk.white.inverse.bold('Store Forecast in Database'));
                 weather.save().then(() => {
-                    console.log(weather);   
+                    console.log(chalk.green.bold(`Database Store Successful`));
+                    console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));   
                 }).catch((error) => {
-                    console.log(error); 
+                    console.log(chalk.red.bold(error)); 
                 });
             });
-            
+            // Delete all outdated forecasts for location
+            console.log(chalk.white.inverse.bold(`Delete All Outdated Forecasts for ${location}`));
             Weather.deleteMany({location: location, utc: {$lt: Math.round(Date.now()/1000)-3600}}).then((a) => {
-                console.log(a);
+                console.log(chalk.green.bold(`${JSON.stringify(a,null,2)}`));
             }).catch((error) => {
-                console.log(error); 
+                console.log(chalk.red.bold(error)); 
             });
-            
         }).catch((error) => {
             res.status(500).send(error);
         });
