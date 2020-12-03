@@ -1,6 +1,5 @@
-require('dotenv').config();
 // Set port variable to the environment variable or 8080
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 8080;
 // Get modules
 const path = require('path');
 const express = require('express');
@@ -10,10 +9,6 @@ const hbs = require('hbs');
 const geocode = require('./utils/geocode');
 // Forecast: Openweather API
 const forecast = require('./utils/forecast');
-
-require('./db/mongoose');
-
-const Weather = require('./models/weather-data');
 
 const app = express();
 
@@ -66,51 +61,16 @@ app.get('/weather', (req, res) => {
             return res.send({error});
         }
         
-        //console.log(Math.round(Date.now()/1000));
-        // Check database
-        Weather.findOne({location: location, utc: {$gte: Math.round(Date.now()/1000)-3600}}).then((a) => {
-            //console.log(a);
-            if(a) {
-                const forecastData = {
-                    actualTemp: a.temperature,
-                    weatherDescription: a.description,
-                    weatherIcon: a.icon,
-                    utc: a.utc
-                };
-                //console.log(forecastData);
-                return res.send({
-                    forecast: forecastData,
-                    location,
-                    address: req.query.address
-                });
-            }
-            forecast(latitude, longitude, (error, forecastData) => {
-                if (error) {
-                    return res.send({error});
-                } 
-
-                res.send({
-                    forecast: forecastData,
-                    location,
-                    address: req.query.address
-                });
-                // Add database stuff           
-                const weather = new Weather({
-                    location: location,
-                    temperature: forecastData.actualTemp,
-                    description: forecastData.weatherDescription,
-                    icon: forecastData.weatherIcon,
-                    utc: forecastData.utc
-                });
-
-                weather.save().then(() => {
-                    console.log(weather);   
-                }).catch((error) => {
-                    console.log(error); 
-                });
+        forecast(latitude, longitude, (error, forecastData) => {
+            if (error) {
+                return res.send({error});
+            } 
+            
+            res.send({
+                forecast: forecastData,
+                location,
+                address: req.query.address
             });
-        }).catch((error) => {
-            res.status(500).send(error);
         });
     });
 });
