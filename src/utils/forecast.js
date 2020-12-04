@@ -1,5 +1,5 @@
 // Openweathermap API key
-const apiKey = '';
+const apiKey = process.env.FORECASTAPIKEY;
 
 const request = require('request');
 const chalk = require('chalk');
