@@ -1,2 +1,3 @@
 ./node_modules/*.*
-# ./mongodb-sensor-data/*.*
+./mongodb-sensor-data/*.*
+.SSID.h

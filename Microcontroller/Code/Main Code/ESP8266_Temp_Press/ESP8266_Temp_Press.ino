@@ -16,8 +16,10 @@
    Team:  Marcin Mariuz Malec
           Wijoyo Utomo
           Koeswanto Polim
-          Andrei
+          Andrei Vedeshkin
 */
+
+#define ARDUINO_ARCH_ESP8266
 
 #include <TimeLib.h>
 #include <ESP8266WiFi.h>
@@ -26,10 +28,17 @@
 #include <BMP280_DEV.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
+#include </Users/utomow/Documents/Courses/EvolveU/Cohort-5/Projects/evolevu-project-2/Microcontroller/SSID.h>
 
 #define DEBUG
 #define SERIAL_SPEED  115200
 #define I2C_SPEED     200000
+
+#define UTC_TZ        0
+#define MST_TZ        -7
+
+#define NTP_SERVER_POOL "us.pool.ntp.org"
+#define UDP_PORT      8888
 
 class SensorData {
   private:
@@ -40,39 +49,35 @@ class SensorData {
     float altitude;
     bool  newData;
   public:
-    SensorData(unsigned int id) {
+    SensorData(unsigned int id) {   // constructor of SensorData class
       this->id = id;
       newData = false;
     }
 
-    bool isNewData() {
-      return newData;
-    }
-
-    void setTime(time_t tm) {
+    void setTime(time_t tm) {       // method for setting data
       this->tm = tm;
     }
 
-    void setTemperature(float temp) {
+    void setTemperature(float temp) {   // method for setting temperature
       this->temperature = temp;
     }
 
-    void setPressure(float pres) {
+    void setPressure(float pres) {  // method for setting pressure
       this->pressure = pres;
     }
 
-    void setAltitude(float alt) {
+    void setAltitude(float alt) {   // method for setting altitude
       this->altitude = alt;
     }
 
-    String formatNumber(uint8_t number) {
+    String formatNumber(uint8_t number) {   // helper function to format date and time format by padding with zero
       if (number < 10)
         return ("0" + String(number));
       else
         return String(number);
     }
 
-    String formatId(unsigned int Id) {
+    String formatId(unsigned int Id) {    // helper function to format id by padding with zero (4 digit number)
       if (Id < 10)
         return ("000" + String(Id));
       else if (Id < 100)
@@ -83,19 +88,7 @@ class SensorData {
         return (String(Id));
     }
 
-    char* padWithZero(uint8_t number, uint8_t digit) {
-      char buffer[digit+1];
-      for (int i = digit-1, j = 0; i >= 0; i--, j++) {
-        if (number > 10^(i-1)) 
-          buffer[j] = (number / (10^i)) + 48;
-        else
-          buffer[j] = 48;
-      }
-      buffer[digit+1] = 0;
-      return buffer;
-    }
-
-    StaticJsonDocument<256> convertToJson() {
+    StaticJsonDocument<256> convertToJson() { // convert sensor date and time data into JSON
       StaticJsonDocument<256> doc;
       doc["sensorId"] = formatId(id);
       doc["time"] = String(year(tm)) + "-" + formatNumber(month(tm)) + "-" + formatNumber(day(tm)) + "T" + formatNumber(hour(tm)) + ":" + formatNumber(minute(tm)) + ":" + formatNumber(second(tm)) +"Z";
@@ -104,13 +97,13 @@ class SensorData {
       return doc;
     }
 
-    void printDataInJson() {
+    void printDataInJson() {      // printing the formatted data in JSON, used for trouble shooting
       Serial.print("Data package in JSON : ");
       serializeJson(convertToJson(), Serial);
       Serial.println();
     }
 
-    void postData(char* URL) {
+    void postData(char* URL) {    // function for performing HTTP POST to the server
       HTTPClient http;
       http.begin(URL);
       http.addHeader("Content-Type", "application/json");
@@ -159,37 +152,25 @@ class LoopTimer {
 };
 
 // Global variables and objects
-LoopTimer timer1Second(1);
-LoopTimer timer1Minute(60);
+LoopTimer timer1Second(1);      // creating loop timer object for 1 second period
+LoopTimer timer1Minute(60);     // creating loop timer object for 1 minute period
 
-SensorData sensorData(1);
+SensorData sensorData(1);       // creating sensor data object to handle sensor data formatting, printing (for checking) and posting to server
 
 
-WiFiUDP Udp;
-unsigned int localPort = 8888;  // local port to listen for UDP packets
+WiFiUDP Udp;                    // Udp object to handle UDP data handling (NTP network communicates in UDP instead of TCP)
+unsigned int localPort = UDP_PORT;  // local port to listen for UDP packets
 
-static const char ntpServerName[] = "us.pool.ntp.org";
-const int timeZone = 0;  
-const int MST = -7;      // Pacific Daylight Time (USA)
+static const char ntpServerName[] = NTP_SERVER_POOL;  //NTP server pools
 
 const int NTP_PACKET_SIZE = 48; // NTP time is in the first 48 bytes of message
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
-
-
-#define SSID1       "Inception"
-#define PASSWORD1   "5XE4w%ug5!PvHwyb"
-
-#define SSID2       "2 Monkeys and Dragon"
-#define PASSWORD2   "Sapim3nd3m"
-
-#define SSID3       "TELUS2340"
-#define PASSWORD3   "f99f664c77"
 
 ESP8266WiFiMulti wifiMulti;
 int wifiStatus = WL_DISCONNECTED;
 
 BMP280_DEV bmp280(0, 2);                          // Instantiate (create) a BMP280 object and set-up for I2C operation on pins SDA: 0, SCL: 2
-float temperature, pressure, altitude;
+float temperature, pressure, altitude;            // Temporary variables to hold the sensor measurements
 
 String  server = "http://10.0.1.30:3000";
 
@@ -212,12 +193,7 @@ void sendNTPpacket(IPAddress &address);
 void initBMP280();
 
 
-// Http client functions
-boolean httpPost(char* request, char* response, char* message);
-boolean httpGet(char* request, char* response);
-
 void setup() {
-  // put your setup code here, to run once:
   initSerial();
   initWiFi();
   initNTP();
@@ -228,7 +204,6 @@ void setup() {
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
   if (timeStatus() != timeNotSet) {
 
     if (timer1Second.isTimerUp()) {
@@ -246,7 +221,7 @@ void loop() {
       sensorData.setPressure(pressure/10);
       sensorData.setAltitude(altitude);
       sensorData.printDataInJson();
-      sensorData.postData("http://10.0.1.14:3000/data");
+      sensorData.postData("http://10.0.1.14:3000/postdata");
     }
   }
 }
@@ -300,7 +275,7 @@ boolean isWiFiConnected() {
 
 // NTP functions
 void initNTP() {
-  Udp.begin(localPort);
+  Udp.begin(UDP_PORT);
   Serial.print("Local port: ");
   Serial.println(Udp.localPort());
   Serial.println("waiting for sync");
@@ -312,31 +287,24 @@ time_t getNtpTime()
 {
   IPAddress ntpServerIP; // NTP server's ip address
 
-  while (Udp.parsePacket() > 0) ; // discard any previously received packets
-  Serial.println("Transmit NTP Request");
-  // get a random server from the pool
-  WiFi.hostByName(ntpServerName, ntpServerIP);
-  Serial.print(ntpServerName);
-  Serial.print(": ");
-  Serial.println(ntpServerIP);
-  sendNTPpacket(ntpServerIP);
+  while (Udp.parsePacket() > 0) ;                   // discard any previously received packets, flush the buffer
+  WiFi.hostByName(ntpServerName, ntpServerIP);      // getting a random server from the pool and get the IP address of the given server name
+  sendNTPpacket(ntpServerIP);                       // send NTP time request
   uint32_t beginWait = millis();
-  while (millis() - beginWait < 1500) {
-    int size = Udp.parsePacket();
+  while (millis() - beginWait < 1500) {             // wait the response for 1.5s. This is a blocking process, not ideal
+    int size = Udp.parsePacket();                   // check the incoming buffer for response from NTP server
     if (size >= NTP_PACKET_SIZE) {
-      Serial.println("Receive NTP Response");
-      Udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
+      Udp.read(packetBuffer, NTP_PACKET_SIZE);      // read packet into the buffer
       unsigned long secsSince1900;
       // convert four bytes starting at location 40 to a long integer
       secsSince1900 =  (unsigned long)packetBuffer[40] << 24;
       secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
       secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
       secsSince1900 |= (unsigned long)packetBuffer[43];
-      return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
+      return secsSince1900 - 2208988800UL + UTC_TZ * SECS_PER_HOUR;
     }
   }
-  Serial.println("No NTP Response :-(");
-  return 0; // return 0 if unable to get the time
+  return 0;                                         // return 0 if unable to get the time
 }
 
 void sendNTPpacket(IPAddress &address)
@@ -365,5 +333,4 @@ void sendNTPpacket(IPAddress &address)
 void initBMP280() {
   bmp280.begin(BMP280_I2C_ALT_ADDR);              // Default initialisation with alternative I2C address (0x76), place the BMP280 into SLEEP_MODE
   bmp280.setClock(I2C_SPEED);
-  //  bmp280.setTimeStandby(TIME_STANDBY_2000MS);     // Set the standby time to 2 seconds
 }

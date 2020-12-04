@@ -6,7 +6,8 @@
                 "/Users/utomow/Library/Arduino15/packages/esp8266/tools/**",
                 "/Users/utomow/Documents/Arduino/libraries/**",
                 "/Applications/Arduino.app/Contents/Java/libraries/**",
-                "/Users/utomow/Library/Arduino15/packages/esp8266/hardware/esp8266/2.7.4/**"
+                "/Users/utomow/Library/Arduino15/packages/esp8266/hardware/esp8266/2.7.4/**",
+                "/Users/utomow/Documents/Courses/EvolveU/Cohort-5/Projects/evolevu-project-2/Microcontroller/**"                
             ],
             "forcedInclude": [],
             "defines": [
