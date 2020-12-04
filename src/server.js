@@ -68,9 +68,8 @@ app.get('/weather', (req, res) => {
             return res.send({error});
         }
         console.log(chalk.green.bold(`Got Geocode:\nLatitude: ${latitude}\nLongitude: ${longitude}\nLocation: ${location}`));
-        //console.log(Math.round(Date.now()/1000));
         // Check database
-        console.log(chalk.white.inverse.bold(`Checking Database For ${location}`));
+        console.log(chalk.white.inverse.bold(`Checking Database For ${location} since ${new Date(Date.now()-(1000*60*60))}`));
         Weather.findOne({location: location, utc: {$gte: Math.round(Date.now()/1000)-3600}}).then((a) => {
             if(a) {
                 console.log(chalk.green.bold('Database Record Found'));
@@ -121,6 +120,7 @@ app.get('/weather', (req, res) => {
                     console.log(chalk.red.bold(error)); 
                 });
             });
+        }).then(() => {
             // Delete all outdated forecasts for location
             console.log(chalk.white.inverse.bold(`Delete All Outdated Forecasts for ${location}`));
             Weather.deleteMany({location: location, utc: {$lt: Math.round(Date.now()/1000)-3600}}).then((a) => {
@@ -128,8 +128,6 @@ app.get('/weather', (req, res) => {
             }).catch((error) => {
                 console.log(chalk.red.bold(error)); 
             });
-        }).catch((error) => {
-            res.status(500).send(error);
         });
     });
 });
@@ -142,6 +140,15 @@ app.get('/help/*', (req, res) => {
     });
     //res.send('Help article not found');
 });
+/*// Test
+app.get('/test', async (req, res) => {
+    try {
+        const weathers = await Weather.find({});
+        res.send(weathers);
+    } catch (error) {
+        res.status(500).send();
+    }
+});*/
 // Serve 404.hbs
 app.get('*', (req, res) => {
     res.render('404', {

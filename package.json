@@ -18,6 +18,8 @@
     "nodemon": "^2.0.6",
     "request": "^2.88.0",
     "mongoose": "^5.10.17",
+    "nodemon": "^2.0.6",
+    "request": "^2.88.0",
     "validator": "^13.1.17"
   }
 }
