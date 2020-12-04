@@ -65,7 +65,8 @@ app.get('/weather', (req, res) => {
     geocode(req.query.address, (error, {latitude, longitude, location} = {}) => {
         if (error) {
             console.log(chalk.red.bold('Failed to Get Geocode'));
-            return res.send({error});
+            console.log(chalk.red.bold(`/**********\n${error}\n/**********`));
+            return res.status(503).send({error: 'Our services are unavailable, please try again later'});
         }
         console.log(chalk.green.bold(`Got Geocode:\nLatitude: ${latitude}\nLongitude: ${longitude}\nLocation: ${location}`));
         // Check database
@@ -121,9 +122,9 @@ app.get('/weather', (req, res) => {
                 });
             });
         }).then(() => {
-            // Delete all outdated forecasts for location
-            console.log(chalk.white.inverse.bold(`Delete All Outdated Forecasts for ${location}`));
-            Weather.deleteMany({location: location, utc: {$lt: Math.round(Date.now()/1000)-3600}}).then((a) => {
+            // Delete all outdated forecasts
+            console.log(chalk.white.inverse.bold(`Delete All Outdated Forecasts`));
+            Weather.deleteMany({utc: {$lt: Math.round(Date.now()/1000)-3600}}).then((a) => {
                 console.log(chalk.green.bold(`${JSON.stringify(a,null,2)}`));
             }).catch((error) => {
                 console.log(chalk.red.bold(error)); 
