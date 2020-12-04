@@ -8,6 +8,8 @@
 
         <title>Weather</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/tailwindcss@next/dist/tailwind.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.css">
         <link rel="stylesheet" href="/css/styles.css">
         <link rel="icon" href="/img/weather.png">
     </head>
@@ -26,14 +28,39 @@
             <p id="message-1"></p>
             <p id="message-2"></p>
             
-            <div id="weather-card" class="card" style="width: 18rem;">
+            <br>
+            <div id="weather-card" class="card" style="width: 30rem;">
                 <div class="card-body">
-                    <h5 class="card-title">Card title</h5>
-                    <p id="weatherDescription" class="card-text"></p>
+                    <section class="px-2 py-4 text-center bg-yellow-400 text-gray-800">
+                    <p class="text-3xl font-medium"> Weather in <span class="card-title"></span>				
+                    </p>             
+                    </section>
+    		    
+                    <section class="flex items-center justify-center">
                     <img id="weatherIcon" src="">
-                    <p id="currentTemp" class="card-text"></p>
+                    <p class="font-bold text-5xl ml-1" id="currentTemp">
+                        <p class="font-bold text-5xl ml-1">°C</p>
+			        </p>            
+		            </section>
+		    
+                    <p class="mt-1 text-lg text-gray-700 font-medium text-transform: uppercase text-center" id="weatherDescription"></p>
+                    <p class="text-sm text-center text-gray-600" id="currentTime"></p>
+                    
+                    <section class="mt-5 py-3 px-2 flex justify-around text-gray-700 bg-yellow-400">
+                        <p>Feels Like</p><p id="chill"><section>°C</section></p>      
+                        <p>Today's Low</p><p id="lowTemp"><section>°C</section></p>                      
+                        <p>Today's High</p><p id="highTemp"><section>°C</section></p>  
+                    </section>
+
+                    <section class="mt-5 py-3 px-2 flex justify-around text-gray-700 bg-yellow-400">
+                        <p class="wi wi-cloud" id="cloud"><section>%</section></p>   
+                        <p class="wi wi-strong-wind flex items-center" id="windSpeed"><section>m/s</section></p>                    
+                        <p class="wi wi-humidity flex items-center" id="humidity"><section>%</section></p>
+			            <p class="wi wi-barometer flex items-center" id="pressure"><section>hPa</section></p>     
+                    </section>    
+
                 </div>
-            </div>
+            </div>     
         </div>
         
         {{>footer}}
