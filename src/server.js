@@ -4,6 +4,10 @@ let port = process.env.PORT || 3000;
 // Get modules
 const path = require('path');
 const express = require('express');
+const hbs = require('hbs');
+const chalk = require('chalk');
+// Get utilities
+// Geocode: Mapbox API
 const geocode = require('./utils/geocode');
 // Forecast: Openweather API
 const forecast = require('./utils/forecast');
