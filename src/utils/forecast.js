@@ -2,11 +2,12 @@
 const apiKey = '';
 
 const request = require('request');
+const chalk = require('chalk');
 
 const forecast = (latitude, longitude, callback) => {
     const url = `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
     
-    console.log(url);
+    console.log(chalk.yellow.bold(url));
     
     request({url, json: true}, (error, {body} = {}) => {
         if (error) {
