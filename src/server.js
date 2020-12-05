@@ -78,6 +78,13 @@ app.get('/weather', (req, res) => {
                     actualTemp: a.temperature,
                     weatherDescription: a.description,
                     weatherIcon: a.icon,
+                    humidity: a.humidity,
+                    pressure: a.pressure,
+                    windSpeed: a.windSpeed,
+                    feelTemp: a.feelTemp,
+                    minTemp: a.minTemp,
+                    maxTemp: a.maxTemp,
+                    cloud: a.cloud, 
                     utc: a.utc
                 };
                 console.log(chalk.green.bold(JSON.stringify(forecastData,null,2)));
@@ -109,6 +116,13 @@ app.get('/weather', (req, res) => {
                     temperature: forecastData.actualTemp,
                     description: forecastData.weatherDescription,
                     icon: forecastData.weatherIcon,
+                    humidity: forecastData.humidity,
+                    pressure: forecastData.pressure,
+                    windSpeed: forecastData.windSpeed,
+                    feelTemp: forecastData.feelTemp,
+                    minTemp: forecastData.minTemp,
+                    maxTemp: forecastData.maxTemp,
+                    cloud: forecastData.cloud,                    
                     utc: forecastData.utc
                 });
                 console.log(chalk.white.inverse.bold('Create Database Object'));
