@@ -1,5 +1,5 @@
 require('dotenv').config();
-// Set port variable to the environment variable or 8080
+// Set port variable to the environment variable or 3000
 let port = process.env.PORT || 3000;
 // Get modules
 const path = require('path');

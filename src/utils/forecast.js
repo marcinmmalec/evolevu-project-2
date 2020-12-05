@@ -25,7 +25,7 @@ const forecast = (latitude, longitude, callback) => {
             //let d = new Date(utcSeconds * 1000);
             //callback(undefined, `It is currently ${actualTemp} degrees out. It feels like ${feelTemp} degress out. It is ${body.weather[0].description}`);
             callback(undefined, {
-                actualTemp: actualTemp,
+                actualTemp: actualTemp,                 
                 weatherDescription: body.weather[0].description,
                 weatherIcon: body.weather[0].icon,
                 humidity: body.main.humidity,
@@ -36,7 +36,6 @@ const forecast = (latitude, longitude, callback) => {
                 maxTemp: maxTemp,
                 cloud: body.clouds.all,                
                 utc: body.dt
-
             });
         }
     });
