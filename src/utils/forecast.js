@@ -16,7 +16,7 @@ const forecast = (latitude, longitude, callback) => {
         } else if (body.error) {
             callback(body.error.info, undefined);
         } else {
-            let actualTemp = Math.round(body.main.temp);                                
+            let actualTemp = Math.round(body.main.temp);
             let feelTemp = Math.round(body.main.feels_like);
             let minTemp = Math.round(body.main.temp_min);
             let maxTemp = Math.round(body.main.temp_max);
@@ -27,15 +27,15 @@ const forecast = (latitude, longitude, callback) => {
             callback(undefined, {
                 actualTemp: actualTemp,                 
                 weatherDescription: body.weather[0].description,
-                weatherIcon: body.weather[0].icon,            
+                weatherIcon: body.weather[0].icon,
                 humidity: body.main.humidity,
                 pressure: body.main.pressure,
                 windSpeed: body.wind.speed,
                 feelTemp: feelTemp,
                 minTemp: minTemp,
                 maxTemp: maxTemp,
-                cloud: body.clouds.all,
-                utc: body.dt                          
+                cloud: body.clouds.all,                
+                utc: body.dt
             });
         }
     });

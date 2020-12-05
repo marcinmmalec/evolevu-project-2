@@ -15,7 +15,7 @@ body {
 }
 
 footer {
-    color: #888888;
+    /*color: #888888;*/
     border-top: 1px solid #eeeeee;
     margin-top: 16px;
     padding: 16px 0;
@@ -89,7 +89,7 @@ button {
 .card {
     position: relative;
     border-radius: 20px;
-  }
+}
 
 .wi::before {
     display: inline-block;
@@ -103,4 +103,4 @@ button {
 	width: 1.3em;
 	height: 1.3em;
 	margin-right: 0.5em;    
-  }
+}
