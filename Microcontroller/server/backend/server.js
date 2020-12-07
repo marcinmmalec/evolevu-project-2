@@ -10,20 +10,30 @@ const Sensor = require('./class/sensor')
 const SensorNode = require('./class/sensor_node')
 
 let sensorNode1 = new SensorNode(1, "My Home", "Sensor Node 1")
-// sensorNode1.setLocation = "My Home"
 sensorNode1.addSensor(new Sensor("Temperature", 5))
 sensorNode1.addSensor(new Sensor("Pressure", 5))
+sensorNode1.sensorArray[0].setValue(20.4)
+sensorNode1.sensorArray[1].setValue(88.741)
 
 let sensorNode2 = new SensorNode(2, "My Office", "Sensor Node 2")
-// sensorNode2.setLocation = "My Office"
 sensorNode2.addSensor(new Sensor("Temperature", 5))
 sensorNode2.addSensor(new Sensor("Pressure", 5))
+sensorNode2.sensorArray[0].setValue(22.3)
+sensorNode2.sensorArray[1].setValue(89.365)
 
 let sensorNode3 = new SensorNode(3, "Warehouse", "Sensor Node 3")
 sensorNode3.addSensor(new Sensor("Temperature", 5))
 sensorNode3.addSensor(new Sensor("Pressure", 5))
+sensorNode3.sensorArray[0].setValue(21.7)
+sensorNode3.sensorArray[1].setValue(86.217)
 
-let sensorNodeArray = [sensorNode1, sensorNode2, sensorNode3]
+let sensorNode4 = new SensorNode(4, "Mom's Home", "Sensor Node 4")
+sensorNode4.addSensor(new Sensor("Temperature", 5))
+sensorNode4.addSensor(new Sensor("Pressure", 5))
+sensorNode4.sensorArray[0].setValue(21.7)
+sensorNode4.sensorArray[1].setValue(86.217)
+
+let sensorNodeArray = [sensorNode1, sensorNode2, sensorNode3, sensorNode4]
 
 app.use(express.json())
 app.use(express.static('../frontend'))
@@ -59,20 +69,22 @@ let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
 
 
 // console.log('Try to connect to database...')
-mongoose.connect("mongodb://localhost:27017/sensor-data", {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-  useCreateIndex: true
-  // ,useFindAndModify: false
-}).catch(error => {
-  console.log("Unable to connect to database");
-  // console.log(error);
-  process.exit(1)
+// mongoose.connect("mongodb://localhost:27017/sensor-data", {
+//   useUnifiedTopology: true,
+//   useNewUrlParser: true,
+//   useCreateIndex: true
+//   // ,useFindAndModify: false
+// }).catch(error => {
+//   console.log("Unable to connect to database");
+//   // console.log(error);
+//   process.exit(1)
+// })
+
+app.get('/nodes', function(req, res) {
+  res.send(sensorNodeArray);
 })
 
-app.get('/', function(req, res) {
-  res.status(200).send('Sensor is not available yet');
-})
+
 
 
 app.get('/getdata/:nodeId', async function(req, res) {
