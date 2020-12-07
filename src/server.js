@@ -1,3 +1,4 @@
+// Module that enables the .env file
 require('dotenv').config();
 // Set port variable to the environment variable or 3000
 let port = process.env.PORT || 3000;
@@ -11,9 +12,9 @@ const chalk = require('chalk');
 const geocode = require('./utils/geocode');
 // Forecast: Openweather API
 const forecast = require('./utils/forecast');
-
+// Run mongoose file that connects to MongoDB
 require('./db/mongoose');
-
+// Get Weather model
 const Weather = require('./models/weather-data');
 
 const app = express();
@@ -56,24 +57,35 @@ app.get('/help', (req, res) => {
 });
 // Handle weather request
 app.get('/weather', (req, res) => {
+    // If no address is provided
     if (!req.query.address) {
+        // Return error that an address must be provided
         return res.send({
             error: 'You must provide an address' 
         });
     }
     console.log(chalk.white.inverse.bold(`Getting Geocode For ${req.query.address}`));
+    /*
+    * Function: Gets the latitude, longitude, and full name of the address provided by the request
+    * Returns: error message, object {latitude, longitude, location} or empty object
+    */
     geocode(req.query.address, (error, {latitude, longitude, location} = {}) => {
+        // If an error was passed (not empty)
         if (error) {
             console.log(chalk.red.bold('Failed to Get Geocode'));
             console.log(chalk.red.bold(`/**********\n${error}\n/**********`));
+            // Return error (probably something wrong with the API)
             return res.status(503).send({error: 'Our services are unavailable, please try again later'});
         }
         console.log(chalk.green.bold(`Got Geocode:\nLatitude: ${latitude}\nLongitude: ${longitude}\nLocation: ${location}`));
         // Check database
         console.log(chalk.white.inverse.bold(`Checking Database For ${location} since ${new Date(Date.now()-(1000*60*60))}`));
-        Weather.findOne({location: location, utc: {$gte: Math.round(Date.now()/1000)-3600}}).then((a) => {
+        Weather.findOne({location: location, utc: {$gte: Math.round(Date.now()/1000)-3600}})
+            .then((a) => {
+            // If we find the result
             if(a) {
                 console.log(chalk.green.bold('Database Record Found'));
+                // Create forecast object
                 const forecastData = {
                     actualTemp: a.temperature,
                     weatherDescription: a.description,
@@ -90,21 +102,31 @@ app.get('/weather', (req, res) => {
                 console.log(chalk.green.bold(JSON.stringify(forecastData,null,2)));
                 console.log(chalk.white.inverse.bold("Send Results To Sender"));
                 console.log(chalk.white.inverse.bold("END REQUEST"));
+                // Return forecast data, location from Geocode, and the original address provided by request
                 return res.send({
                     forecast: forecastData,
                     location,
                     address: req.query.address
                 });
             }
+            // Otherwise,
             console.log(chalk.green.bold("No Database Record Found"));
             console.log(chalk.white.bold.inverse(`Get Forecast for ${location}`));
+            /*
+            * Function: Gets the weather information from the provided latitude and longitude
+            * Returns: error message, forecastData
+            */
             forecast(latitude, longitude, (error, forecastData) => {
+                // If error
                 if (error) {
                     console.log(chalk.red.bold('Failed to Get Forecast'));
+                    // Return error
                     return res.send({error});
-                } 
+                }
+                // Otherwise,
                 console.log(chalk.green.bold(`Got Forecast for ${location}`));
                 console.log(chalk.white.inverse.bold('Send Results to Sender'));
+                // Send results to requester
                 res.send({
                     forecast: forecastData,
                     location,
@@ -128,6 +150,7 @@ app.get('/weather', (req, res) => {
                 console.log(chalk.white.inverse.bold('Create Database Object'));
                 console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));
                 console.log(chalk.white.inverse.bold('Store Forecast in Database'));
+                // Add forecast into database
                 weather.save().then(() => {
                     console.log(chalk.green.bold(`Database Store Successful`));
                     console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));   
