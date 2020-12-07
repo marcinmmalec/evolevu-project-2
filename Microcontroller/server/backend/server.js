@@ -1,11 +1,62 @@
 const { response, json } = require('express')
 const express = require('express')
+const cors = require('cors')
+
 const app = express()
 const port = process.env.PORT || 3000
 
+
+const Sensor = require('./class/sensor')
+const SensorNode = require('./class/sensor_node')
+
+let sensorNode1 = new SensorNode(1, "My Home", "Sensor Node 1")
+// sensorNode1.setLocation = "My Home"
+sensorNode1.addSensor(new Sensor("Temperature", 5))
+sensorNode1.addSensor(new Sensor("Pressure", 5))
+
+let sensorNode2 = new SensorNode(2, "My Office", "Sensor Node 2")
+// sensorNode2.setLocation = "My Office"
+sensorNode2.addSensor(new Sensor("Temperature", 5))
+sensorNode2.addSensor(new Sensor("Pressure", 5))
+
+let sensorNode3 = new SensorNode(3, "Warehouse", "Sensor Node 3")
+sensorNode3.addSensor(new Sensor("Temperature", 5))
+sensorNode3.addSensor(new Sensor("Pressure", 5))
+
+let sensorNodeArray = [sensorNode1, sensorNode2, sensorNode3]
+
 app.use(express.json())
+app.use(express.static('../frontend'))
 
 const mongoose = require('mongoose')
+const Schema = mongoose.Schema;
+
+const sensorDataSchema = new Schema({
+  nodeId: Number,
+  time: Date,
+  temperature: Number,
+  pressure: Number
+})
+
+const sensorSchema = new Schema({
+  type: String,
+  rate: Number,
+  enable: Boolean,
+  description: String,
+})
+
+const sensorNodeSchema = new Schema({
+  id: Number,
+  location: String,
+  sensorArray: [sensorSchema],
+  description: String,
+  enable: Boolean
+})
+
+let sensorDataModel = mongoose.model("sensordatas", sensorDataSchema)
+let sensorModel = mongoose.model("sensorModels", sensorSchema)
+let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
+
 
 // console.log('Try to connect to database...')
 mongoose.connect("mongodb://localhost:27017/sensor-data", {
@@ -19,31 +70,26 @@ mongoose.connect("mongodb://localhost:27017/sensor-data", {
   process.exit(1)
 })
 
-const Schema = mongoose.Schema;
-
-const sensorDataSchema = new Schema({
-  sensorId: Number,
-  time: Date,
-  temperature: Number,
-  pressure: Number
-})
-
-let sensorDataModel = mongoose.model("sensordatas", sensorDataSchema)
-
-let sensorDataArray = []
-let newData = {};
-
 app.get('/', function(req, res) {
   res.status(200).send('Sensor is not available yet');
 })
 
 
-app.get('/getdata/:sensorId', async function(req, res) {
-  const id = req.params.sensorId
-  // console.log('requested sensor id ', sensorId)
-  // const filter = {$and: [{"sensorId" : {$lte: 2}}, {"sensorId" : {$gte: 1}}]}
-  const filter = { "sensorId" : id}
+app.get('/getdata/:nodeId', async function(req, res) {
+  const id = req.params.nodeId
+  // console.log('requested sensor id ', nodeId)
+  // const filter = {$and: [{"nodeId" : {$lte: 2}}, {"nodeId" : {$gte: 1}}]}
+  const filter = { "nodeId" : id}
+  // let allsensordata = sensorDataModel.find(filter).then(res.send(allsensordata))
+  // filter.then(filter => allsensordata = sensorDataModel.find(filter))
   const allsensordata = await sensorDataModel.find(filter)
+  // allsensordata.forEach(dataObject => {
+  //   let {nodeId, time, temperature, pressure} = dataObject;
+  //   console.log(`Sensor ID : ${nodeId}`);
+  //   console.log(`Date and Time : ${time}`);
+  //   console.log(`Temperature : ${temperature}C`);
+  //   console.log(`Pressure : ${pressure}kPa`);
+  // })
   // console.log(allsensordata);
 
   res.send(allsensordata)
@@ -59,20 +105,25 @@ app.get('/getdata/:sensorId', async function(req, res) {
 
 
 app.post('/postdata', function(req, res) {
-  console.log('Receive sensor data');
-  newData = new sensorDataModel(req.body)
-  console.log(newData)
-  newData
+  try {
+      console.log('Receive sensor data');
+      newData = new sensorDataModel(req.body)
+      console.log(newData)
+      newData
       .save()
       .then(() => res.send("data saved"))
       .catch((err) => {
         res.send("unable to save to database");
         console.log("unable to save to database")
       }) 
+    } catch(error) {
+      console.log(error);
+      res.status(400).send();
+    }
   // const newId = getNewId();
   // const newData = {
   //   id : newId,
-  //   sensorId : req.body.sensorId,
+  //   nodeId : req.body.nodeId,
   //   date : req.body.date,
   //   time : req.body.time,
   //   temperature : req.body.temperature,
@@ -93,3 +144,19 @@ app.post('/postdata', function(req, res) {
 let server = app.listen(port, function() {
   console.log('Sensor data server started on ', port)
 })
+
+
+function loadSensorNodeData() {
+  sensorNodes = sensorNodeModel.find()
+  for (let i = 0; i < sensorNodes.length; i++) {
+    let newSensorNodeArray = []
+    newSensorNodeArray.id = sensorNodes.id
+    newSensorNodeArray.location = sensorNodes.location
+    newSensorNodeArray.description = sensorNode.description
+    newSensorNodeArray.enable = sensorNode.enable
+
+    for (let j = 0; j < sensorNode.sensorArray.length; j++) {
+      newSensorNodeArray.sensorArray.push(sensorNode.sensorArray[j])
+    }
+  }
+}
