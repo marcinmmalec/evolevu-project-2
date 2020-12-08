@@ -33,31 +33,36 @@
             <div id="weather-card" class="card" style="width: 30rem;">
                 <div class="card-body">
                     <section class="px-2 py-4 text-center bg-yellow-400 text-gray-800">
-                    <p class="text-3xl font-medium"> Weather in <span class="card-title"></span>				
-                    </p>             
+                        <p class="text-3xl font-medium"> Weather in 
+                            <span class="card-title"></span>				
+                        </p>             
                     </section>
     		    
                     <section class="flex items-center justify-center">
-                    <img id="weatherIcon" src="">
-                    <p class="font-bold text-5xl ml-1" id="currentTemp">
-                        <p class="font-bold text-5xl ml-1">°C</p>
-			        </p>            
+                        <img id="weatherIcon" src="">
+                        <p class="font-bold text-5xl ml-1" id="currentTemp">
+                            <span class="font-bold text-5xl ml-1">°C</span>
+			            </p>            
 		            </section>
 		    
                     <p class="mt-1 text-lg text-gray-700 font-medium text-transform: uppercase text-center" id="weatherDescription"></p>
                     <p class="text-sm text-center text-gray-600" id="currentTime"></p>
+                    <div class="flex justify-center">
+                        <button class="btn btn-submit" id="updateButton">Update</button>
+                    </div>
+                    
                     
                     <section class="mt-5 py-3 px-2 flex justify-around text-gray-700 bg-yellow-400">
-                        <p>Feels Like</p><p id="chill"><section>°C</section></p>      
-                        <p>Today's Low</p><p id="lowTemp"><section>°C</section></p>                      
-                        <p>Today's High</p><p id="highTemp"><section>°C</section></p>  
+                        <p>Feels Like</p><p id="chill"></p>      
+                        <p>Today's Low</p><p id="lowTemp"></p>
+                        <p>Today's High</p><p id="highTemp"></p>  
                     </section>
 
                     <section class="mt-5 py-3 px-2 flex justify-around text-gray-700 bg-yellow-400">
-                        <p class="wi wi-cloud" id="cloud"><section>%</section></p>   
-                        <p class="wi wi-strong-wind flex items-center" id="windSpeed"><section>m/s</section></p>                    
-                        <p class="wi wi-humidity flex items-center" id="humidity"><section>%</section></p>
-			            <p class="wi wi-barometer flex items-center" id="pressure"><section>hPa</section></p>     
+                        <p class="wi wi-cloud" id="cloud"></p>   
+                        <p class="wi wi-strong-wind flex items-center" id="windSpeed"></p>
+                        <p class="wi wi-humidity flex items-center" id="humidity"></p>
+			            <p class="wi wi-barometer flex items-center" id="pressure"></p>     
                     </section>    
 
                 </div>

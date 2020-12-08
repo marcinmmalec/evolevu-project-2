@@ -97,7 +97,7 @@ app.get('/weather', (req, res) => {
                     minTemp: a.minTemp,
                     maxTemp: a.maxTemp,
                     cloud: a.cloud, 
-                    utc: a.utc
+                    utc: a.utc,
                 };
                 console.log(chalk.green.bold(JSON.stringify(forecastData,null,2)));
                 console.log(chalk.white.inverse.bold("Send Results To Sender"));
@@ -106,7 +106,8 @@ app.get('/weather', (req, res) => {
                 return res.send({
                     forecast: forecastData,
                     location,
-                    address: req.query.address
+                    address: req.query.address,
+                    _id: a._id
                 });
             }
             // Otherwise,
@@ -125,13 +126,6 @@ app.get('/weather', (req, res) => {
                 }
                 // Otherwise,
                 console.log(chalk.green.bold(`Got Forecast for ${location}`));
-                console.log(chalk.white.inverse.bold('Send Results to Sender'));
-                // Send results to requester
-                res.send({
-                    forecast: forecastData,
-                    location,
-                    address: req.query.address
-                });
                 // Add database stuff           
                 const weather = new Weather({
                     location: location,
@@ -153,7 +147,15 @@ app.get('/weather', (req, res) => {
                 // Add forecast into database
                 weather.save().then(() => {
                     console.log(chalk.green.bold(`Database Store Successful`));
-                    console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));   
+                    console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));
+                    console.log(chalk.white.inverse.bold('Send Results to Sender'));
+                    // Send results to requester
+                    res.send({
+                        forecast: forecastData,
+                        location,
+                        address: req.query.address,
+                        _id: weather.id
+                    });
                 }).catch((error) => {
                     console.log(chalk.red.bold(error)); 
                 });
@@ -168,6 +170,10 @@ app.get('/weather', (req, res) => {
             });
         });
     });
+});
+
+app.put('/updateweather', (req, res) => {
+    
 });
 
 app.get('/help/*', (req, res) => {

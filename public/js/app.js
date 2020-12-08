@@ -126,6 +126,7 @@ const chill = document.querySelector('#chill');
 const lowTemp = document.querySelector('#lowTemp');
 const highTemp = document.querySelector('#highTemp');
 const currentTime = document.querySelector('#currentTime');
+const updateButton = document.querySelector('#updateButton')
 const cloud = document.querySelector('#cloud');
 
 weatherForm.addEventListener('submit', (event) => {
@@ -150,13 +151,44 @@ weatherForm.addEventListener('submit', (event) => {
                 chill.textContent = data.forecast.feelTemp; 
                 lowTemp.textContent = data.forecast.minTemp;  
                 highTemp.textContent = data.forecast.maxTemp;
-                cloud.textContent = data.forecast.cloud;                
+                cloud.textContent = `${data.forecast.cloud}`;                
                 let d = new Date(data.forecast.utc * 1000);
-                currentTime.textContent = d;   
+                currentTime.textContent = d;
+                updateButton.setAttribute("data-value", data._id);
                 console.log(d);
+                console.log(data._id);
             }
         });
     });
 });
-
-            
+const updateUrl = 'http://localhost:8080/updateweather?id=';
+updateButton.addEventListener('click', (event) => {
+    return alert('Will be implemented later');
+    messageOne.textContent = 'Loading...';
+    fetch(`${updateUrl}${updateButton.getAttribute("data-value")}`).then((response) => {
+        response.json().then((data) => {
+            if (data.error) {
+                messageOne.textContent = data.error;
+            } else {
+                messageOne.textContent = '';
+                //messageTwo.textContent = data.forecast;
+                cardTitle.textContent = data.location;
+                weatherDescription.textContent = data.forecast.weatherDescription;
+                weatherIcon.src = ` http://openweathermap.org/img/wn/${data.forecast.weatherIcon}@2x.png`;
+                currentTemp.textContent = data.forecast.actualTemp;
+                humidity.textContent = data.forecast.humidity;
+                pressure.textContent = data.forecast.pressure;
+                windSpeed.textContent = data.forecast.windSpeed;  
+                chill.textContent = data.forecast.feelTemp; 
+                lowTemp.textContent = data.forecast.minTemp;  
+                highTemp.textContent = data.forecast.maxTemp;
+                cloud.textContent = `${data.forecast.cloud}`;                
+                let d = new Date(data.forecast.utc * 1000);
+                currentTime.textContent = d;
+                updateButton.setAttribute("data-value", data._id);
+                console.log(d);
+                console.log(data._id);
+            }
+        });
+    });
+});
