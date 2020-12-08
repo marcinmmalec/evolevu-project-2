@@ -39,6 +39,7 @@ app.use(express.json())
 app.use(express.static('../frontend'))
 
 const mongoose = require('mongoose')
+const { restart } = require('nodemon')
 const Schema = mongoose.Schema;
 
 const sensorDataSchema = new Schema({
@@ -80,14 +81,42 @@ let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
 //   process.exit(1)
 // })
 
-app.get('/nodes', function(req, res) {
-  res.send(sensorNodeArray);
+app.get('/get/node/all', function(req, res) {
+  try {
+    res.send(sensorNodeArray);
+  } catch(error) {
+    console.log(error)
+    res.status(400).send('Cannot find any sensor node')
+  }
 })
 
+app.get('/get/node/:nodeId', function(req, res) {
+  try {
+    let nodeInformation = sensorNodeArray[sensorNodeArray.findIndex(id => {id === nodeId})]
+    res.send(nodeInformation)
+  } catch(error) {
+    console.log(error);
+    res.status(400).send(`Cannot find sensor node ${nodeId}`)
+  }
+})
 
+app.get('/get/node/:nodeId/data', function(req, res) {
+  try {
+    let nodeInformation = sensorNodeArray[sensorNodeArray.findIndex(id => {id === nodeId})]
+    let temperature = nodeInformation.sensorArray.temperature;
+    let pressure = nodeInformation.sensorArray.pressure
+    res.send({temperature, pressure})
+  } catch(error) {
+    console.log(error);
+    res.status(400).send('Cannot find temperature and pressure data')
+  }
+})
 
+app.get('/get/node/:nodeId/:at', async function(req, res) {
 
-app.get('/getdata/:nodeId', async function(req, res) {
+})
+
+app.get('/get/node/:nodeId/:from-:to', async function(req, res) {
   const id = req.params.nodeId
   // console.log('requested sensor id ', nodeId)
   // const filter = {$and: [{"nodeId" : {$lte: 2}}, {"nodeId" : {$gte: 1}}]}
@@ -104,6 +133,7 @@ app.get('/getdata/:nodeId', async function(req, res) {
   // })
   // console.log(allsensordata);
 
+  
   res.send(allsensordata)
 
   // console.log('Sending last sensor data')
@@ -116,7 +146,7 @@ app.get('/getdata/:nodeId', async function(req, res) {
 })
 
 
-app.post('/postdata', function(req, res) {
+app.post('/post/node/data', function(req, res) {
   try {
       console.log('Receive sensor data');
       newData = new sensorDataModel(req.body)
