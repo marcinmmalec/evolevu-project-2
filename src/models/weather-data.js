@@ -23,6 +23,34 @@ const Weather = mongoose.model('Forecasts', {
         type: String,
         required: true
     },
+    humidity: {
+        type: Number,
+        required: true
+    },
+    pressure: {
+        type: Number,
+        required: true
+    },    
+    windSpeed: {
+        type: Number,
+        required: true
+    },
+    feelTemp: {
+        type: Number,
+        required: true
+    },
+    minTemp: {
+        type: Number,
+        required: true
+    },
+    maxTemp: {
+        type: Number,
+        required: true
+    },
+    cloud: {
+        type: Number,
+        required: true
+    },
     utc: {
         type: Number,
         required: true

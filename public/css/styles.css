@@ -15,7 +15,7 @@ body {
 }
 
 footer {
-    color: #888888;
+    /*color: #888888;*/
     border-top: 1px solid #eeeeee;
     margin-top: 16px;
     padding: 16px 0;
@@ -89,15 +89,18 @@ button {
 .card {
     position: relative;
     border-radius: 20px;
-  }
-
-.card-body .card-text {
-    margin-top: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .portrait {
-    width: 250px;
 }
 
+.wi::before {
+    display: inline-block;
+    font-family: 'weathericons';
+    font-style: normal;
+    font-weight: normal;
+    height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;   
+	opacity: 0.6;
+	width: 1.3em;
+	height: 1.3em;
+	margin-right: 0.5em;    
+}
