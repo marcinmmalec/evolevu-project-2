@@ -82,12 +82,12 @@ let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
 // })
 
 app.get('/get/node/all', function(req, res) {
-  try {
+  // try {
     res.send(sensorNodeArray);
-  } catch(error) {
-    console.log(error)
-    res.status(400).send('Cannot find any sensor node')
-  }
+  // } catch(error) {
+    // console.log(error)
+    // res.status(400).send('Cannot find any sensor node')
+  // }
 })
 
 app.get('/get/node/:nodeId', function(req, res) {

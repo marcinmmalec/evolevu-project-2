@@ -24,6 +24,7 @@ function mapSensorNode(sensorNode) {
 }
 
 function loadSensorsToPage() {
+  debugger
   fetch('http://localhost:3000/get/node/all', {cache: 'no-store'})
   .then(response => response.json())
   .then(data => {
