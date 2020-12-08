@@ -81,7 +81,11 @@ let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
 //   process.exit(1)
 // })
 
-app.get('/get/node/all', function(req, res) {
+// app.get('/', function(req, res) {
+//   res.status(200).sendFile(index.html)
+// })
+
+app.get(['/', '/get/node/all'], function(req, res) {
   // try {
     res.send(sensorNodeArray);
   // } catch(error) {

@@ -24,16 +24,22 @@ function mapSensorNode(sensorNode) {
 }
 
 function loadSensorsToPage() {
-  debugger
-  fetch('http://localhost:3000/get/node/all', {cache: 'no-store'})
+  fetch('http://localhost:3000/', {cache: 'no-store'})
   .then(response => response.json())
   .then(data => {
     sensorNodeArray = data.map(mapSensorNode)
     loadGauges(sensorNodeArray)
   })
+  // fetch('http://localhost:3000/get/node/all', {cache: 'no-store'})
+  // .then(response => response.json())
+  // .then(data => {
+  //   sensorNodeArray = data.map(mapSensorNode)
+  //   loadGauges(sensorNodeArray)
+  // })
 }
 
 function loadFunction() {
+  debugger
   loadSensorsToPage()
   setInterval(updateGaugesValues, 1000)
 }
