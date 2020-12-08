@@ -104,3 +104,35 @@ button {
 	height: 1.3em;
 	margin-right: 0.5em;    
 }
+
+/* Add symbols to weather card */
+p#chill::after {
+    content: '°C';
+}
+
+p#lowTemp::after {
+    content: '°C';
+}
+
+p#highTemp::after {
+    content: '°C';
+}
+
+p#cloud::after {
+    content: '%';
+}
+
+p#windSpeed::after {
+    content: 'm/s';
+    margin-left: 0.20em;
+}
+
+p#humidity::after {
+    content: '%';
+}
+
+p#pressure::after {
+    content: 'hPa';
+    margin-left: 0.20em;
+}
+
