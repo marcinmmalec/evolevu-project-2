@@ -15,4 +15,4 @@ Use npm install to install packages.<br/>
 Make sure nodemon is installed, then run npm run dev<br/>
 
 # Note
-.env should not be included. It will need to be gained elsewhere<br/>
+.env should not be included. It will need to be gained elsewhere or filled in with your own information<br/>
