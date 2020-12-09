@@ -5,9 +5,8 @@ const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 3000
 
-
-const Sensor = require('./class/sensor')
-const SensorNode = require('./class/sensor_node')
+const Sensor = require('./Microcontroller/backend/class/sensor')
+const SensorNode = require('./Microcontroller/backend/class/sensor_node')
 
 let sensorNode1 = new SensorNode(1, "My Home", "Sensor Node 1")
 sensorNode1.addSensor(new Sensor("Temperature", 5))
@@ -67,54 +66,16 @@ let sensorDataModel = mongoose.model("sensordatas", sensorDataSchema)
 let sensorModel = mongoose.model("sensorModels", sensorSchema)
 let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
 
-
-// console.log('Try to connect to database...')
-// mongoose.connect("mongodb://localhost:27017/sensor-data", {
-//   useUnifiedTopology: true,
-//   useNewUrlParser: true,
-//   useCreateIndex: true
-//   // ,useFindAndModify: false
-// }).catch(error => {
-//   console.log("Unable to connect to database");
-//   // console.log(error);
-//   process.exit(1)
-// })
-
 app.get('/nodes', function(req, res) {
   res.send(sensorNodeArray);
 })
 
-
-
-
 app.get('/getdata/:nodeId', async function(req, res) {
   const id = req.params.nodeId
-  // console.log('requested sensor id ', nodeId)
-  // const filter = {$and: [{"nodeId" : {$lte: 2}}, {"nodeId" : {$gte: 1}}]}
   const filter = { "nodeId" : id}
-  // let allsensordata = sensorDataModel.find(filter).then(res.send(allsensordata))
-  // filter.then(filter => allsensordata = sensorDataModel.find(filter))
   const allsensordata = await sensorDataModel.find(filter)
-  // allsensordata.forEach(dataObject => {
-  //   let {nodeId, time, temperature, pressure} = dataObject;
-  //   console.log(`Sensor ID : ${nodeId}`);
-  //   console.log(`Date and Time : ${time}`);
-  //   console.log(`Temperature : ${temperature}C`);
-  //   console.log(`Pressure : ${pressure}kPa`);
-  // })
-  // console.log(allsensordata);
-
   res.send(allsensordata)
-
-  // console.log('Sending last sensor data')
-  // if (Object.keys(newData).length != 0) {
-  //   res.send(newData)
-  // } else {
-  //   res.send('Will fetch data from database')
-  //   console.log("Will fetch data from database");
-  // }
 })
-
 
 app.post('/postdata', function(req, res) {
   try {
@@ -132,25 +93,6 @@ app.post('/postdata', function(req, res) {
       console.log(error);
       res.status(400).send();
     }
-  // const newId = getNewId();
-  // const newData = {
-  //   id : newId,
-  //   nodeId : req.body.nodeId,
-  //   date : req.body.date,
-  //   time : req.body.time,
-  //   temperature : req.body.temperature,
-  //   pressure : req.body.pressure }
-  //   sensorDataArray.push(newData)
-  //   res.send('Data saved')
-  //   console.log(sensorDataArray[sensorDataArray.length-1])
-
-  //   function getNewId() {
-  //     if (sensorDataArray.length === 0) {
-  //       return 1;
-  //     } else {
-  //       return sensorDataArray.reduce((max, cur)=> max>cur.id ? max : cur.id, 1) + 1
-  //     }
-  //   }
 })
 
 let server = app.listen(port, function() {
