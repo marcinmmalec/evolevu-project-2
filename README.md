@@ -1,5 +1,8 @@
 # evolevu-project-2
 
+# Installing Node Modules
+To install modules use npm i
+
 # MongoDB
 Need to install MongoDB: https://www.mongodb.com/try/download/community.
 After downloading unzip the files into your users folder under your username and rename the folder to "mongodb".
