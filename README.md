@@ -11,7 +11,7 @@ After run the following command in terminal: /Users/{USERNAME}/mongodb/bin/mongo
 Replace {USERNAME} with your username. This will enable the database
 
 # Running with nodemon
-Use npm install to install packages
+Use npm install to install packages.\n
 Make sure nodemon is installed, then run npm run dev
 
 # Note
