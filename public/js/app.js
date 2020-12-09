@@ -157,6 +157,8 @@ weatherForm.addEventListener('submit', (event) => {
                 updateButton.setAttribute("data-value", data._id);
                 console.log(d);
                 console.log(data._id);
+                
+                flickrLoad(data.latitude, data.longitude, data.forecast.weatherDescription);
             }
         });
     });

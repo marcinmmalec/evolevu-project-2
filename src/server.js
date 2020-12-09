@@ -108,7 +108,9 @@ app.get('/weather', (req, res) => {
                     forecast: forecastData,
                     location,
                     address: req.query.address,
-                    _id: a._id
+                    _id: a._id,
+                    latitude: latitude,
+                    longitude: longitude
                 });
             }
             // Otherwise,
@@ -140,7 +142,9 @@ app.get('/weather', (req, res) => {
                     minTemp: forecastData.minTemp,
                     maxTemp: forecastData.maxTemp,
                     cloud: forecastData.cloud,                    
-                    utc: forecastData.utc
+                    utc: forecastData.utc,
+                    latitude: latitude,
+                    longitude: longitude
                 });
                 console.log(chalk.white.inverse.bold('Create Database Object'));
                 console.log(chalk.green.bold(`${JSON.stringify(weather,null,2)}`));
@@ -155,7 +159,9 @@ app.get('/weather', (req, res) => {
                         forecast: forecastData,
                         location,
                         address: req.query.address,
-                        _id: weather.id
+                        _id: weather.id,
+                        latitude: latitude,
+                        longitude: longitude
                     });
                 }).catch((error) => {
                     console.log(chalk.red.bold(error)); 
