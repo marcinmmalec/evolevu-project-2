@@ -9,31 +9,7 @@ const port = process.env.PORT || 3000
 const Sensor = require('./class/sensor')
 const SensorNode = require('./class/sensor_node')
 
-let sensorNode1 = new SensorNode(1, "My Home", "Sensor Node 1")
-sensorNode1.addSensor(new Sensor("Temperature", 5))
-sensorNode1.addSensor(new Sensor("Pressure", 5))
-sensorNode1.sensorArray[0].setValue(20.4)
-sensorNode1.sensorArray[1].setValue(88.741)
-
-let sensorNode2 = new SensorNode(2, "My Office", "Sensor Node 2")
-sensorNode2.addSensor(new Sensor("Temperature", 5))
-sensorNode2.addSensor(new Sensor("Pressure", 5))
-sensorNode2.sensorArray[0].setValue(22.3)
-sensorNode2.sensorArray[1].setValue(89.365)
-
-let sensorNode3 = new SensorNode(3, "Warehouse", "Sensor Node 3")
-sensorNode3.addSensor(new Sensor("Temperature", 5))
-sensorNode3.addSensor(new Sensor("Pressure", 5))
-sensorNode3.sensorArray[0].setValue(21.7)
-sensorNode3.sensorArray[1].setValue(86.217)
-
-let sensorNode4 = new SensorNode(4, "Mom's Home", "Sensor Node 4")
-sensorNode4.addSensor(new Sensor("Temperature", 5))
-sensorNode4.addSensor(new Sensor("Pressure", 5))
-sensorNode4.sensorArray[0].setValue(21.7)
-sensorNode4.sensorArray[1].setValue(86.217)
-
-let sensorNodeArray = [sensorNode1, sensorNode2, sensorNode3, sensorNode4]
+let sensorNodes = []
 
 app.use(express.json())
 app.use(express.static('../frontend'))
@@ -43,7 +19,7 @@ const { restart } = require('nodemon')
 const Schema = mongoose.Schema;
 
 const sensorDataSchema = new Schema({
-  nodeId: Number,
+  id: Number,
   time: Date,
   temperature: Number,
   pressure: Number
@@ -59,42 +35,63 @@ const sensorSchema = new Schema({
 const sensorNodeSchema = new Schema({
   id: Number,
   location: String,
-  sensorArray: [sensorSchema],
+  sensors: [sensorSchema],
   description: String,
   enable: Boolean
 })
 
 let sensorDataModel = mongoose.model("sensordatas", sensorDataSchema)
 let sensorModel = mongoose.model("sensorModels", sensorSchema)
-let sensorNodeModel = mongoose.model("sensornodes", sensorNodeSchema)
+let sensorNodeModel = mongoose.model("nodes", sensorNodeSchema)
 
 
-// console.log('Try to connect to database...')
-// mongoose.connect("mongodb://localhost:27017/sensor-data", {
-//   useUnifiedTopology: true,
-//   useNewUrlParser: true,
-//   useCreateIndex: true
-//   // ,useFindAndModify: false
-// }).catch(error => {
-//   console.log("Unable to connect to database");
-//   // console.log(error);
-//   process.exit(1)
-// })
-
-// app.get('/', function(req, res) {
-//   res.status(200).sendFile(index.html)
-// })
-
-app.get(['/', '/get/node/all'], function(req, res) {
-  // try {
-    res.send(sensorNodeArray);
-  // } catch(error) {
-    // console.log(error)
-    // res.status(400).send('Cannot find any sensor node')
-  // }
+mongoose.connect("mongodb://localhost:27017/sensor_database", {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true
+  ,useFindAndModify: false
+}).catch(error => {
+  console.log("Unable to connect to database");
+  console.log(error);
+  process.exit(1)
 })
 
-app.get('/get/node/:nodeId', function(req, res) {
+getNodeFromDB()
+
+
+
+
+let server = app.listen(port, function() {
+  console.log('Sensor data server started on ', port)
+})
+
+
+
+
+app.get('/get/node/all', function(req, res) {
+  try {
+    console.log(sensorNodes);
+    res.send(sensorNodes)
+  } catch(error) {
+    res.status(400).send('Cannot find sensor node')
+  }
+})
+
+app.get('/get/node/data',function(req, res) {
+  let datas = []
+  for (let i = 0; i < sensorNodes.length; i++) {
+    datas.push({temperature : sensorNodes[i].sensors[0].value, pressure : sensorNodes[i].sensors[1].value})
+  }
+  console.log(datas);
+  try {
+    res.send(datas)
+  } catch(error) {
+    console.log(error)
+    res.status(400).send('Cannot find sensor data')
+  }
+})
+
+app.get('/get/node/:id', function(req, res) {
   try {
     let nodeInformation = sensorNodeArray[sensorNodeArray.findIndex(id => {id === nodeId})]
     res.send(nodeInformation)
@@ -104,7 +101,7 @@ app.get('/get/node/:nodeId', function(req, res) {
   }
 })
 
-app.get('/get/node/:nodeId/data', function(req, res) {
+app.get('/get/node/:id/data', function(req, res) {
   try {
     let nodeInformation = sensorNodeArray[sensorNodeArray.findIndex(id => {id === nodeId})]
     let temperature = nodeInformation.sensorArray.temperature;
@@ -116,11 +113,11 @@ app.get('/get/node/:nodeId/data', function(req, res) {
   }
 })
 
-app.get('/get/node/:nodeId/:at', async function(req, res) {
+app.get('/get/node/:id/:at', async function(req, res) {
 
 })
 
-app.get('/get/node/:nodeId/:from-:to', async function(req, res) {
+app.get('/get/node/:id/:from-:to', async function(req, res) {
   const id = req.params.nodeId
   // console.log('requested sensor id ', nodeId)
   // const filter = {$and: [{"nodeId" : {$lte: 2}}, {"nodeId" : {$gte: 1}}]}
@@ -153,9 +150,10 @@ app.get('/get/node/:nodeId/:from-:to', async function(req, res) {
 app.post('/post/node/data', function(req, res) {
   try {
       console.log('Receive sensor data');
-      newData = new sensorDataModel(req.body)
-      console.log(newData)
-      newData
+      newSensorData = new sensorDataModel(req.body)
+      let {id, time, temperature, pressure} = newSensorData
+      updateSensorNodes(id, temperature, pressure)
+      newSensorData
       .save()
       .then(() => res.send("data saved"))
       .catch((err) => {
@@ -166,43 +164,50 @@ app.post('/post/node/data', function(req, res) {
       console.log(error);
       res.status(400).send();
     }
-  // const newId = getNewId();
-  // const newData = {
-  //   id : newId,
-  //   nodeId : req.body.nodeId,
-  //   date : req.body.date,
-  //   time : req.body.time,
-  //   temperature : req.body.temperature,
-  //   pressure : req.body.pressure }
-  //   sensorDataArray.push(newData)
-  //   res.send('Data saved')
-  //   console.log(sensorDataArray[sensorDataArray.length-1])
-
-  //   function getNewId() {
-  //     if (sensorDataArray.length === 0) {
-  //       return 1;
-  //     } else {
-  //       return sensorDataArray.reduce((max, cur)=> max>cur.id ? max : cur.id, 1) + 1
-  //     }
-  //   }
-})
-
-let server = app.listen(port, function() {
-  console.log('Sensor data server started on ', port)
-})
+  })
 
 
-function loadSensorNodeData() {
-  sensorNodes = sensorNodeModel.find()
-  for (let i = 0; i < sensorNodes.length; i++) {
-    let newSensorNodeArray = []
-    newSensorNodeArray.id = sensorNodes.id
-    newSensorNodeArray.location = sensorNodes.location
-    newSensorNodeArray.description = sensorNode.description
-    newSensorNodeArray.enable = sensorNode.enable
-
-    for (let j = 0; j < sensorNode.sensorArray.length; j++) {
-      newSensorNodeArray.sensorArray.push(sensorNode.sensorArray[j])
+async function getNodeFromDB() {
+  let receivedNodes = await sensorNodeModel.find()
+  for (let i = 0; i < receivedNodes.length; i++) {
+    let newNode = new SensorNode(receivedNodes[i].id, receivedNodes[i].location, receivedNodes[i].description)
+    newNode.enable = receivedNodes[i].enable
+    for (let j = 0; j < receivedNodes[i].sensors.length; j++) {
+      let sensor = new Sensor(receivedNodes[i].sensors[j].type, receivedNodes[i].sensors[j].rate)
+      sensor.value = 0
+      sensor.enable = receivedNodes[i].sensors[j].enable
+      sensor.description = receivedNodes[i].sensors[j].description
+      newNode.sensors.push(sensor)
+      
     }
+    // printSensors(newNode)
+    sensorNodes.push(newNode)
   }
+  // console.log(sensorNodes[3]);
+}
+
+
+function printSensors(node) {
+  for (let i = 0; i < node.sensors.length; i++) {
+    console.log(node.sensors[i]);
+  }
+}
+
+function getSensorNodesIndex(nodeId) {
+  let index = 0
+  for (let i = 0; i < sensorNodes.length; i++) {
+    if (sensorNodes[i].id === nodeId)
+      index = i
+  }
+  return index
+}
+
+
+function updateSensorNodes(nodeId, temperature, pressure) {
+  // console.log(nodeId, temperature, pressure );
+  let index = getSensorNodesIndex(nodeId)
+  // console.log(index)
+  sensorNodes[index].sensors[0].value = temperature
+  sensorNodes[index].sensors[1].value = pressure
+  console.log(sensorNodes[index].sensors);
 }

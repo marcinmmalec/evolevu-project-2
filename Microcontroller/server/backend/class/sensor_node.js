@@ -4,13 +4,13 @@ class SensorNode {
   constructor(id, location, description) {
     this.id = id;
     this.location = location;
-    this.sensorArray = []
+    this.sensors = []
     this.description = description;
     this.enable = true
   }
 
   addSensor(sensorObj) {
-    this.sensorArray.push(sensorObj)
+    this.sensors.push(sensorObj)
   }
 
   enable() {

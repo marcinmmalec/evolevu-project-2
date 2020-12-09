@@ -2,7 +2,7 @@ class Sensor {
   constructor(type, rate){
     this.type = type;
     this.rate = rate;
-    this.value = 0;
+    this.value = 22;
     this.enable = true;
     this.description = "";
   }
@@ -33,7 +33,7 @@ class Sensor {
     this.value = newvalue;
   }
 
-  getVale() {
+  getValue() {
     return this.value;
   }
 

@@ -90,7 +90,7 @@ class SensorData {
 
     StaticJsonDocument<256> convertToJson() { // convert sensor date and time data into JSON
       StaticJsonDocument<256> doc;
-      doc["sensorId"] = formatId(id);
+      doc["id"] = formatId(id);
       doc["time"] = String(year(tm)) + "-" + formatNumber(month(tm)) + "-" + formatNumber(day(tm)) + "T" + formatNumber(hour(tm)) + ":" + formatNumber(minute(tm)) + ":" + formatNumber(second(tm)) +"Z";
       doc["temperature"] = String(temperature, 2);
       doc["pressure"] = String(pressure, 4);
@@ -172,7 +172,7 @@ int wifiStatus = WL_DISCONNECTED;
 BMP280_DEV bmp280(0, 2);                          // Instantiate (create) a BMP280 object and set-up for I2C operation on pins SDA: 0, SCL: 2
 float temperature, pressure, altitude;            // Temporary variables to hold the sensor measurements
 
-String  server = "http://10.0.1.30:3000";
+String  server = "http://10.0.1.30:3000/post/node/data";
 
 // Function prototypes
 // Serial commnunication functions
