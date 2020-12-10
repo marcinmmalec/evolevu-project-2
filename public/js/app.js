@@ -91,7 +91,7 @@ var displayData = {
           body.style.backgroundImage = 'url(' + imgURL + ')';       
   
       }, false);
-      xhr.open("GET", "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=c004bd46564d26383d37d88c1cbd4154&lat=" + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", true);
+      xhr.open("GET", `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=c004bd46564d26383d37d88c1cbd4154&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", true);
       xhr.send();
   }}
   
