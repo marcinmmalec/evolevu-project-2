@@ -1,0 +1,48 @@
+.node_text_label {
+  width: 100px;
+  text-align: right;
+}
+
+.text_area_label {
+  width: 100px;
+  text-align: right;
+  vertical-align: top;
+}
+
+.text_area {
+  resize: none;
+}
+
+.radio_button_container {
+  margin-left: 0px;
+}
+
+.sensor_text_label {
+  width: 100px;
+  text-align: right;
+}
+
+.left_column {
+  background-color: bisque;
+  border-style: solid;
+  border-width: medium;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+  border-color: black;
+}
+
+.right_column {
+  background-color: cadetblue;
+  border-style: solid;
+  border-width: medium;
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
+  border-left-style: none;
+  border-color: black;
+}
+
+.action_button {
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+}

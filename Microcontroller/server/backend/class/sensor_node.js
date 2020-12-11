@@ -6,7 +6,7 @@ class SensorNode {
     this.location = location;
     this.sensors = []
     this.description = description;
-    this.enable = true
+    this.status = true
   }
 
   addSensor(sensorObj) {
@@ -14,11 +14,15 @@ class SensorNode {
   }
 
   enable() {
-    this.enable = true;
+    this.status = true;
   }
 
   disable() {
-    this.enable = false;
+    this.status = false;
+  }
+
+  status() {
+    return this.status
   }
 
   setLocation(location) {
@@ -29,8 +33,8 @@ class SensorNode {
     return this.location;
   }
 
-  setDescription(description) {
-    this.description = description;
+  setDescription(newDescription) {
+    this.description = newDescription;
   }
 
   getDescription() {

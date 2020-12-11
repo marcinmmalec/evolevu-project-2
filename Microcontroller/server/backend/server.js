@@ -20,15 +20,15 @@ const Schema = mongoose.Schema;
 
 const sensorDataSchema = new Schema({
   id: Number,
-  time: Date,
   temperature: Number,
-  pressure: Number
+  pressure: Number,
+  time: Date
 })
 
 const sensorSchema = new Schema({
   type: String,
   rate: Number,
-  enable: Boolean,
+  status: Boolean,
   description: String,
 })
 
@@ -37,7 +37,7 @@ const sensorNodeSchema = new Schema({
   location: String,
   sensors: [sensorSchema],
   description: String,
-  enable: Boolean
+  status: Boolean
 })
 
 let sensorDataModel = mongoose.model("sensordatas", sensorDataSchema)
@@ -56,19 +56,13 @@ mongoose.connect("mongodb://localhost:27017/sensor_database", {
   process.exit(1)
 })
 
-getNodeFromDB()
-
-
-
+assignNodesFromDbToSensorNodes()
 
 let server = app.listen(port, function() {
   console.log('Sensor data server started on ', port)
 })
 
-
-
-
-app.get('/get/node/all', function(req, res) {
+app.get('/node/all', function(req, res) {
   try {
     console.log(sensorNodes);
     res.send(sensorNodes)
@@ -77,12 +71,11 @@ app.get('/get/node/all', function(req, res) {
   }
 })
 
-app.get('/get/node/data',function(req, res) {
+app.get('/node/data',function(req, res) {
   let datas = []
   for (let i = 0; i < sensorNodes.length; i++) {
     datas.push({temperature : sensorNodes[i].sensors[0].value, pressure : sensorNodes[i].sensors[1].value})
   }
-  console.log(datas);
   try {
     res.send(datas)
   } catch(error) {
@@ -91,7 +84,7 @@ app.get('/get/node/data',function(req, res) {
   }
 })
 
-app.get('/get/node/:id', function(req, res) {
+app.get('/node/:id', function(req, res) {
   try {
     let nodeInformation = sensorNodeArray[sensorNodeArray.findIndex(id => {id === nodeId})]
     res.send(nodeInformation)
@@ -101,7 +94,7 @@ app.get('/get/node/:id', function(req, res) {
   }
 })
 
-app.get('/get/node/:id/data', function(req, res) {
+app.get('/node/:id/data', function(req, res) {
   try {
     let nodeInformation = sensorNodeArray[sensorNodeArray.findIndex(id => {id === nodeId})]
     let temperature = nodeInformation.sensorArray.temperature;
@@ -113,11 +106,11 @@ app.get('/get/node/:id/data', function(req, res) {
   }
 })
 
-app.get('/get/node/:id/:at', async function(req, res) {
+app.get('/node/:id/:at', async function(req, res) {
 
 })
 
-app.get('/get/node/:id/:from-:to', async function(req, res) {
+app.get('/node/:id/:from-:to', async function(req, res) {
   const id = req.params.nodeId
   // console.log('requested sensor id ', nodeId)
   // const filter = {$and: [{"nodeId" : {$lte: 2}}, {"nodeId" : {$gte: 1}}]}
@@ -147,45 +140,88 @@ app.get('/get/node/:id/:from-:to', async function(req, res) {
 })
 
 
-app.post('/post/node/data', function(req, res) {
+app.post('/node/data', function(req, res) {
   try {
-      console.log('Receive sensor data');
-      newSensorData = new sensorDataModel(req.body)
-      let {id, time, temperature, pressure} = newSensorData
-      updateSensorNodes(id, temperature, pressure)
-      newSensorData
-      .save()
-      .then(() => res.send("data saved"))
-      .catch((err) => {
-        res.send("unable to save to database");
-        console.log("unable to save to database")
-      }) 
-    } catch(error) {
-      console.log(error);
-      res.status(400).send();
-    }
-  })
-
-
-async function getNodeFromDB() {
-  let receivedNodes = await sensorNodeModel.find()
-  for (let i = 0; i < receivedNodes.length; i++) {
-    let newNode = new SensorNode(receivedNodes[i].id, receivedNodes[i].location, receivedNodes[i].description)
-    newNode.enable = receivedNodes[i].enable
-    for (let j = 0; j < receivedNodes[i].sensors.length; j++) {
-      let sensor = new Sensor(receivedNodes[i].sensors[j].type, receivedNodes[i].sensors[j].rate)
-      sensor.value = 0
-      sensor.enable = receivedNodes[i].sensors[j].enable
-      sensor.description = receivedNodes[i].sensors[j].description
-      newNode.sensors.push(sensor)
-      
-    }
-    // printSensors(newNode)
-    sensorNodes.push(newNode)
+    console.log('Receive sensor data');
+    console.log(sensorDataModel(req.body));
+    let {id, time, temperature, pressure} = sensorDataModel(req.body)
+    updateSensorNode(id, temperature, pressure)
+    sensorDataModel(req.body)
+    .save()
+    .then(() => res.send("data saved"))
+    .catch((err) => {
+      res.send("unable to save to database");
+      console.log("unable to save to database")
+    }) 
+  } catch(error) {
+    console.log(error);
+    res.status(400).send();
   }
-  // console.log(sensorNodes[3]);
+})
+
+app.post('/node/add', function(req, res) {
+  try {
+    addSensorNodes(sensorNodeModel(req.body))
+    sensorNodeModel(req.body)
+    .save()
+    .then(() => res.send("new Node saved"))
+    .then(console.log("new node is saved"))
+  } catch(error) {
+    res.send("unable to save new node")
+    console.log("undable to save new node")
+  }
+})
+
+app.patch('/node/update/:id', function(req, res) {
+  try {
+    const filter = {"id" : id}
+    const updatedNode = new sensorNodeModel(req.body)
+    
+    .updateOne()
+    .then(() => res.send("node") )
+  } catch(error) {
+    res.send("unable to update node ", id)
+    console.log("unable to update node ", id);
+  }
+})
+
+app.delete('node/delete/:id', function(req, res) {
+  try {
+
+  } catch(error) {
+    res.send("unable to delete node ", id)
+    console.log("unable to delete node ", id);
+  }
+})
+
+async function assignNodesFromDbToSensorNodes() {
+  let receivedNodes = await sensorNodeModel.find()
+  
+  for (let i = 0; i < receivedNodes.length; i++) {
+    addSensorNodes(createSensorNodeFromModel(receivedNodes[i]))
+  }
 }
 
+function createSensorNodeFromModel(nodeDbObject) {
+  let newNode = new SensorNode(nodeDbObject.id, nodeDbObject.location, nodeDbObject.description)
+  newNode.enable()
+  for (let i = 0; i < nodeDbObject.sensors.length; i++) {
+    newNode.addSensor(createSensorFromModel(nodeDbObject.sensors[i]))
+  }
+  return newNode
+}
+
+function createSensorFromModel(sensorDbObject) {
+  let newSensor = new Sensor(sensorDbObject.type, sensorDbObject.rate)
+  newSensor.setValue(0)
+  if (sensorDbObject.status) {
+    newSensor.enable()
+  } else {
+    newSensor.disable()
+  }
+  newSensor.setDescription(sensorDbObject.description)
+  return newSensor
+}
 
 function printSensors(node) {
   for (let i = 0; i < node.sensors.length; i++) {
@@ -193,7 +229,7 @@ function printSensors(node) {
   }
 }
 
-function getSensorNodesIndex(nodeId) {
+function getSensorNodeIndex(nodeId) {
   let index = 0
   for (let i = 0; i < sensorNodes.length; i++) {
     if (sensorNodes[i].id === nodeId)
@@ -203,11 +239,34 @@ function getSensorNodesIndex(nodeId) {
 }
 
 
-function updateSensorNodes(nodeId, temperature, pressure) {
-  // console.log(nodeId, temperature, pressure );
-  let index = getSensorNodesIndex(nodeId)
-  // console.log(index)
+
+function updateSensorNode(nodeId, temperature, pressure) {
+  let index = getSensorNodeIndex(nodeId)
+  updateTemperatureSensorNodeValue(index, temperature)
+  updatePressureSensorNodeValue(index, pressure)
+}
+
+function updateTemperatureSensorNodeValue(index, temperature) {
   sensorNodes[index].sensors[0].value = temperature
+}
+
+function updatePressureSensorNodeValue(index, pressure) {
   sensorNodes[index].sensors[1].value = pressure
-  console.log(sensorNodes[index].sensors);
+}
+
+function findSensorNodesIndex(nodeId) {
+  return (sensorNodes.find(id => (id == nodeId)))
+}
+
+function addSensorNodes(newSensorNodeObject) {
+  sensorNodes.push(newSensorNodeObject)
+}
+
+function deleteSensorNodes(nodeId) {
+  sensorNodes.splice(findSensorNodesIndex(nodeId), 1)
+}
+
+function updateSensorNodes(nodeId, newSensorNodeObject) {
+  let index = findSensorNodesIndex(nodeId)
+  Object.assign(sensorNodes[index], newSensorNodeObject)
 }

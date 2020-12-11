@@ -153,7 +153,7 @@ class LoopTimer {
 
 // Global variables and objects
 LoopTimer timer1Second(1);      // creating loop timer object for 1 second period
-LoopTimer timer1Minute(60);     // creating loop timer object for 1 minute period
+LoopTimer timer1Minute(5);     // creating loop timer object for 1 minute period
 
 SensorData sensorData(1);       // creating sensor data object to handle sensor data formatting, printing (for checking) and posting to server
 
@@ -172,7 +172,7 @@ int wifiStatus = WL_DISCONNECTED;
 BMP280_DEV bmp280(0, 2);                          // Instantiate (create) a BMP280 object and set-up for I2C operation on pins SDA: 0, SCL: 2
 float temperature, pressure, altitude;            // Temporary variables to hold the sensor measurements
 
-String  server = "http://10.0.1.30:3000/post/node/data";
+// String  server = "http://10.0.1.30:3000/post/node/data";
 
 // Function prototypes
 // Serial commnunication functions
@@ -221,7 +221,7 @@ void loop() {
       sensorData.setPressure(pressure/10);
       sensorData.setAltitude(altitude);
       sensorData.printDataInJson();
-      sensorData.postData("http://10.0.1.14:3000/postdata");
+      sensorData.postData("http://10.0.1.30:3000/node/data");
     }
   }
 }

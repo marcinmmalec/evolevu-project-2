@@ -2,31 +2,17 @@ class Sensor {
   constructor(type, rate){
     this.type = type;
     this.rate = rate;
-    this.value = 22;
-    this.enable = true;
+    this.value = 0;
+    this.status = true;
     this.description = "";
   }
-  // constructor(type, rate) {
-  //   this.type = type;
-  //   this.rate = rate;
-  //   this.value = 0;
-  //   this.enable = true;
-  //   this.description = "";
-  // }
-  // constructor(type, rate, initialValue) {
-  //   this.type = type;
-  //   this.rate = rate;
-  //   this.value = initialValue;
-  //   this.enable = true;
-  //   this.description = "";
-  // }
 
   enable() {
-    this.enable = true;
+    this.state = true;
   }
 
   disable() {
-    this.enable = false;
+    this.state = false;
   }
 
   setValue(newvalue) {
@@ -53,12 +39,12 @@ class Sensor {
     return this.rate;
   }
 
-  setDescription(description) {
-    this.description = description;
+  setDescription(newDescription) {
+    this.description = newDescription;
   }
 
   getDescription() {
-    return this.description;
+    return (this.description);
   }
 }
 

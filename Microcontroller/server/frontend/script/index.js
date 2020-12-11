@@ -1,51 +1,79 @@
 let gaugeNodes = []
 
-function createGauges(nodeArray) {
+function loadGaugeNodesToPage(gaugeArray) {
   let nodeListContainer = document.getElementById("nodeListContainer")
-  for (let i=0; i < nodeArray.length; i++) {
-    nodeListContainer.appendChild(nodeArray[i].htmlElement)
+  console.log(gaugeArray)
+  for (let i = 0; i < gaugeArray.length; i++) {
+    nodeListContainer.appendChild(gaugeArray[i].htmlElement)
   }
 }
 
-function mapSensorNode(sensorNode) {
-  let outputObject = new GaugeNode(sensorNode.id, sensorNode.location, sensorNode.description)
-  outputObject.enable = sensorNode.enable;
-  for (let i = 0; i < sensorNode.sensors.length; i++ ) {
-    outputObject.addGauge(sensorNode.sensors[i].type)
-    outputObject.gauges[i].rate = sensorNode.sensors[i].rate
-    outputObject.gauges[i].value = sensorNode.sensors[i].value
-    outputObject.gauges[i].enable = sensorNode.sensors[i].enable
-    outputObject.gauges[i].description = sensorNode.sensors[i].description
+function createGaugeNodeFromSensorNode(sensorNode) {
+  let gaugeNode = new GaugeNode(sensorNode.id, sensorNode.location, sensorNode.description)
+  console.log("sensorNode = ", sensorNode);
+  if (sensorNode.status) {
+    gaugeNode.enable()
+  } else {
+    gaugeNode.disable()
   }
-  return outputObject
+  for (let i = 0; i < sensorNode.sensors.length; i++) {
+    gaugeNode.addGauge(createGaugeFromSensor(sensorNode.id, sensorNode.sensors[i]))
+  }
+  console.log("gaugeNode =  ", gaugeNode);
+  return gaugeNode
 }
 
-function loadGaugesToPage() {
-  fetch('http://localhost:3000/get/node/all', {cache: 'no-store'})
-  .then(response => response.json())
-  .then(data => {
-    // console.log(data);
-    gaugeNodes = data.map(mapSensorNode)
-    // console.log(gaugeNodes)
-    createGauges(gaugeNodes)
-  })
+function createGaugeFromSensor(id, sensor) {
+  let gauge = new Gauge(id, sensor.type)
+  gauge.setRate(sensor.rate)
+  gauge.setValue(sensor.value)
+  gauge.setDescription(sensor.description)
+  if (sensor.status) {
+    gauge.enable()
+  } else {
+    gauge.disable()
+  }
+
+  // console.log(gauge);
+  return gauge
 }
 
-function updateGaugesValues(){
-  fetch('http://localhost:3000/get/node/data', {cache: 'no-store'})
-  .then(response => response.json())
-  .then(data => {
-    console.log("Incoming data = ", data);
-    // console.log("gaugeNodes data = ", gaugeNodes)
-    for (let i = 0; i < data.length; i++) {
-      gaugeNodes[i].gauges[0].setValue(data[i].temperature)
-      gaugeNodes[i].gauges[1].setValue(data[i].pressure)
-    }
-    console.log(gaugeNodes)
-  })
+function fetchSensorNodesIntoGaugeNodes() {
+  fetch('http://localhost:3000/node/all', { cache: 'no-store' })
+    .then(response => response.json())
+    .then(data => {
+      gaugeNodes = data.map(createGaugeNodeFromSensorNode)
+      loadGaugeNodesToPage(gaugeNodes)
+    })
 }
 
-function onloadFunction() {
-  loadGaugesToPage()
+function updateGaugesValues() {
+  fetch('http://localhost:3000/node/data', { cache: 'no-store' })
+    .then(response => response.json())
+    .then(data => {
+      for (let i = 0; i < data.length; i++) {
+        gaugeNodes[i].gauges[0].setValue(data[i].temperature)
+        gaugeNodes[i].gauges[1].setValue(data[i].pressure)
+      }
+    })
+}
+
+function onLoadFunction() {
+  fetchSensorNodesIntoGaugeNodes()
+  hideNodeButtons()
+  hideNodeFormArea()
   setInterval(updateGaugesValues, 5000)
+}
+
+function findGaugeNodesIndex(nodeId) {
+  return (gaugeNodes.find(id => (id == nodeId)))
+}
+
+function deleteGaugeNodes(nodeId) {
+  gaugeNodes.splice(findGaugeNodesIndex(nodeId), 1)
+}
+
+function updateGaugeNodes(nodeId, newGaugeObject) {
+  let index = findGaugeNodesIndex(nodeId)
+  Object.assign(gaugeNodes[Index], newGaugeObject)
 }
