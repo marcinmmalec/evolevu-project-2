@@ -195,7 +195,7 @@ app.get('/backgroundImg', (req, res) => {
         let searchDesc, splitDesc;
         splitDesc = req.query.description.split(" ");
         searchDesc = splitDesc.slice(-1)[0];
-        request(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=c004bd46564d26383d37d88c1cbd4154&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", (error, body) => {
+        request(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${process.env.FLICKRAPIKEY}&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", (error, body) => {
             //console.log(body);
             console.log(body.body);
             let fullText = body.body;
