@@ -188,7 +188,7 @@ app.get('/backgroundImg', (req, res) => {
         //let latitude = 50.8796;
         //let longitude = -113.9555;
         //searchDesc = 'clear sky';
-        console.log(req.query);
+        //console.log(req.query);
         let latitude = req.query.latitude;
         let longitude = req.query.longitude;
         //let searchDesc = req.query.description;
@@ -197,12 +197,12 @@ app.get('/backgroundImg', (req, res) => {
         searchDesc = splitDesc.slice(-1)[0];
         request(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${process.env.FLICKRAPIKEY}&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", (error, body) => {
             //console.log(body);
-            console.log(body.body);
+            //console.log(body.body);
             let fullText = body.body;
             let segment = (fullText.slice(14, -14)) + "}";
             let fullJSON = JSON.parse(segment);
             let imgURL = fullJSON.photos.photo[0].url_l;
-            console.log(`IMGURL: ${imgURL}`);
+            //console.log(`IMGURL: ${imgURL}`);
             res.send({
                 imgURL: imgURL
             });
