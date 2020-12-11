@@ -182,6 +182,37 @@ app.get('/weather', (req, res) => {
 app.put('/updateweather', (req, res) => {
     
 });
+const request = require('request');
+app.get('/backgroundImg', (req, res) => {
+    try {
+        //let latitude = 50.8796;
+        //let longitude = -113.9555;
+        //searchDesc = 'clear sky';
+        console.log(req.query);
+        let latitude = req.query.latitude;
+        let longitude = req.query.longitude;
+        //let searchDesc = req.query.description;
+        let searchDesc, splitDesc;
+        splitDesc = req.query.description.split(" ");
+        searchDesc = splitDesc.slice(-1)[0];
+        request(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=c004bd46564d26383d37d88c1cbd4154&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", (error, body) => {
+            //console.log(body);
+            console.log(body.body);
+            let fullText = body.body;
+            let segment = (fullText.slice(14, -14)) + "}";
+            let fullJSON = JSON.parse(segment);
+            let imgURL = fullJSON.photos.photo[0].url_l;
+            console.log(`IMGURL: ${imgURL}`);
+            res.send({
+                imgURL: imgURL
+            });
+        });
+    } catch (error) {
+        res.send({
+            imgURL: 'error'
+        });
+    }
+});
 
 app.get('/help/*', (req, res) => {
     res.render('404', {

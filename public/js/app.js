@@ -48,8 +48,20 @@ var displayData = {
 
         var detailWeather = response.weather[0];
         var description = detailWeather.description;
+        console.log(`Description: ${description}`);
   
-        flickrLoad(latitude, longitude, description); 
+        //flickrLoad(latitude, longitude, description);
+        fetch(`http://localhost:8080/backgroundImg?latitude=${latitude}&longitude=${longitude}&description=${description}`).then((response) => {
+                    response.json().then((data) => {
+                        console.log(data.imgURL);
+                        if (data.imgURL === 'error') {
+                            body.style.backgroundImage = null;
+                            //console.log(body.style.backgroundImage);
+                        } else {
+                            body.style.backgroundImage = 'url(' + data.imgURL + ')';
+                        }
+                    });
+                });
   
         displayData.weather.innerHTML = description;
         displayData.icon.src = "http://openweathermap.org/img/w/" + detailWeather.icon + ".png";
@@ -71,7 +83,7 @@ var displayData = {
   }
   
   
-  function flickrLoad(latitude, longitude, description){
+  /*function flickrLoad(latitude, longitude, description){
       var searchDesc, splitDesc;
       splitDesc = description.split(" ");
       searchDesc = splitDesc.slice(-1)[0];
@@ -88,14 +100,15 @@ var displayData = {
           var imgURL = fullJSON.photos.photo[0].url_l;
           var img = new Image();
           img.src = imgURL;
+          console.log(imgURL);
           body.style.backgroundImage = 'url(' + imgURL + ')';       
   
       }, false);
-      xhr.open("GET", `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=c004bd46564d26383d37d88c1cbd4154&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", true);
+      xhr.open("GET", `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=&lat=` + latitude + "&lon=" + longitude + "&accuracy=1&tags=" + searchDesc + "&sort=relevance&extras=url_l&format=json", true);
       xhr.send();
   }}
   
-  
+  */
   function findIP(){
     if (window.XMLHttpRequest){
       var xhr = new XMLHttpRequest();
@@ -129,6 +142,8 @@ const currentTime = document.querySelector('#currentTime');
 const updateButton = document.querySelector('#updateButton')
 const cloud = document.querySelector('#cloud');
 
+const body = document.getElementsByTagName('body')[0];
+
 weatherForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const location = search.value;
@@ -156,9 +171,20 @@ weatherForm.addEventListener('submit', (event) => {
                 currentTime.textContent = d;
                 updateButton.setAttribute("data-value", data._id);
                 console.log(d);
-                console.log(data._id);
+                //console.log(data._id);
                 
-                flickrLoad(data.latitude, data.longitude, data.forecast.weatherDescription);
+                fetch(`http://localhost:8080/backgroundImg?latitude=${data.latitude}&longitude=${data.longitude}&description=${data.forecast.weatherDescription}`).then((response) => {
+                    response.json().then((data) => {
+                        console.log(data.imgURL);
+                        if (data.imgURL === 'error') {
+                            body.style.backgroundImage = null;
+                            //console.log(body.style.backgroundImage);
+                        } else {
+                            body.style.backgroundImage = 'url(' + data.imgURL + ')';
+                        }
+                    });
+                });
+                //flickrLoad(data.latitude, data.longitude, data.forecast.weatherDescription);
             }
         });
     });
