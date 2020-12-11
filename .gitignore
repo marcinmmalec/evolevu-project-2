@@ -3,4 +3,4 @@
 node_modules/
 **/.DS_Store
 **/SSID.h
-package-lock.js
+package-lock.json
